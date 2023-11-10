@@ -20,3 +20,4 @@ hurry.filesize>=0.9
 bs4
 faust-cchardet>=2.1.18
 boto3
+scrapy-proxymesh-py3
