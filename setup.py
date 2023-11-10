@@ -51,7 +51,8 @@ news-please is an open source, easy-to-use news crawler that extracts structured
           'hurry.filesize>=0.9',
           'bs4',
           'faust-cchardet>=2.1.18',
-          'boto3'
+          'boto3',
+          'scrapy-proxymesh-py3'
       ],
       extras_require={
           ':sys_platform == "win32"': [
