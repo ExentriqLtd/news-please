@@ -5,7 +5,7 @@ import logging
 
 import requests
 import urllib3
-
+import os
 from .response_decoder import decode_response
 
 MAX_FILE_SIZE = 20000000
@@ -45,10 +45,18 @@ class SimpleCrawler(object):
         """
         html_str = None
         # send
+        PROXY_HTTP = os.getenv('PROXYMESH_HTTP_URL')
+        PROXY_HTTPS = os.getenv('PROXYMESH_HTTPS_URL')
+        proxys = None
+        if PROXY_HTTP is not None and PROXY_HTTPS is not None:
+            proxys = {
+                'http': PROXY_HTTP,
+                'https': PROXY_HTTPS
+            }
         try:
             # read by streaming chunks (stream=True, iter_content=xx)
             # so we can stop downloading as soon as MAX_FILE_SIZE is reached
-            response = requests.get(url, timeout=timeout, verify=False, allow_redirects=True, headers=HEADERS)
+            response = requests.get(url, timeout=timeout, verify=False, allow_redirects=True, headers=HEADERS, proxies=proxys)
         except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
             LOGGER.error('malformed URL: %s', url)
         except requests.exceptions.TooManyRedirects:
