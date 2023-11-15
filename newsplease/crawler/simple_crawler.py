@@ -21,7 +21,7 @@ HEADERS = {
 }
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def get_proxy_rotation(proxys: dict, http_port: str, https_port: str, username: str, password:str):
+def get_proxy_rotation(proxys: dict, http_port: str, https_port: str, username: str, password:str, is_proxy_https = False):
     """
     Obtains the configuration for proxy rotation.
 
@@ -40,9 +40,14 @@ def get_proxy_rotation(proxys: dict, http_port: str, https_port: str, username: 
     try:
         proxies = proxys.split(',')  
         formatted_proxies = []
+        protocol_http = 'http://'
+        protocol_https = 'http://'
+        if is_proxy_https is True: 
+           protocol_https = 'https://'
+
         for proxy in proxies:
-            formatted_proxy_http = f"http://{username}:{password}@{proxy}:{http_port}"
-            formatted_proxy_https = f"https://{username}:{password}@{proxy}:{https_port}"
+            formatted_proxy_http = f"{protocol_http}{username}:{password}@{proxy}:{http_port}"
+            formatted_proxy_https = f"{protocol_https}{username}:{password}@{proxy}:{https_port}"
             obj = {
                 "http": formatted_proxy_http,
                 "https": formatted_proxy_https,
@@ -96,6 +101,7 @@ class SimpleCrawler(object):
         try:
             # read by streaming chunks (stream=True, iter_content=xx)
             # so we can stop downloading as soon as MAX_FILE_SIZE is reached
+            LOGGER.info(f'start withount proxymesh: Some or all of the required environment variables are missing. proxys: {str(proxys)}')
             response = requests.get(url, timeout=timeout, verify=False, allow_redirects=True, headers=HEADERS, proxies=proxys)
         except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
             LOGGER.error('malformed URL: %s', url)
