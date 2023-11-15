@@ -6,6 +6,7 @@ import logging
 import requests
 import urllib3
 import os
+import random
 from .response_decoder import decode_response
 
 MAX_FILE_SIZE = 20000000
@@ -37,7 +38,7 @@ def get_proxy_rotation(proxys: dict, http_port: str, https_port: str, username: 
     """
     formatted_proxies = []
     try:
-        proxies = proxy.split(', ')  
+        proxies = proxys.split(', ')  
         formatted_proxies = []
         for proxy in proxies:
             formatted_proxy_http = f"http://{username}:{password}@{proxy}:{http_port}"
@@ -78,16 +79,18 @@ class SimpleCrawler(object):
         html_str = None
         # send
         PROXYS = os.getenv('PROXYS_MESH')
-        PROXY_USERNAME = os.getenv('PROXY_USERNAME')
-        PROXY_PASSWORD = os.getenv('PROXY_PASSWORD')
         PROXY_HTTP_PORT = os.getenv('PROXY_HTTP_PORT')
         PROXY_HTTPS_PORT = os.getenv('PROXY_HTTPS_PORT')
+        PROXY_USERNAME = os.getenv('PROXY_USERNAME')
+        PROXY_PASSWORD = os.getenv('PROXY_PASSWORD')
         # Check if all variables exist
         required_variables = [PROXYS, PROXY_USERNAME, PROXY_PASSWORD, PROXY_HTTP_PORT, PROXY_HTTPS_PORT]
         all_variables_exist = all(variable is not None for variable in required_variables)
         proxys = None
         if all_variables_exist:
-            proxys = get_proxy_rotation(proxys=PROXYS, http_port=PROXY_HTTP_PORT, https_port=PROXY_HTTPS_PORT, username=PROXY_USERNAME, password=PROXY_PASSWORD)
+            proxys_env_rotation = get_proxy_rotation(proxys=PROXYS, http_port=PROXY_HTTP_PORT, https_port=PROXY_HTTPS_PORT, username=PROXY_USERNAME, password=PROXY_PASSWORD)
+            proxy_index = random.randint(0, len(proxys_env_rotation) -1)
+            proxys = {"http": proxys_env_rotation[proxy_index]['http'], "https": proxys_env_rotation[proxy_index]['https']}
         else:
             LOGGER.info('start withount proxymesh: Some or all of the required environment variables are missing.')
         try:
