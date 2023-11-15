@@ -38,7 +38,7 @@ def get_proxy_rotation(proxys: dict, http_port: str, https_port: str, username: 
     """
     formatted_proxies = []
     try:
-        proxies = proxys.split(', ')  
+        proxies = proxys.split(',')  
         formatted_proxies = []
         for proxy in proxies:
             formatted_proxy_http = f"http://{username}:{password}@{proxy}:{http_port}"
