@@ -97,11 +97,11 @@ class SimpleCrawler(object):
             proxy_index = random.randint(0, len(proxys_env_rotation) -1)
             proxys = {"http": proxys_env_rotation[proxy_index]['http'], "https": proxys_env_rotation[proxy_index]['https']}
         else:
-            LOGGER.info('start withount proxymesh: Some or all of the required environment variables are missing.')
+            LOGGER.info('start without proxymesh: Some or all of the required environment variables are missing.')
         try:
             # read by streaming chunks (stream=True, iter_content=xx)
             # so we can stop downloading as soon as MAX_FILE_SIZE is reached
-            LOGGER.info(f'start withount proxymesh: Some or all of the required environment variables are missing. proxys: {str(proxys)}')
+            LOGGER.debug(f'start with proxymesh:  {str(proxys)}')
             response = requests.get(url, timeout=timeout, verify=False, allow_redirects=True, headers=HEADERS, proxies=proxys)
         except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
             LOGGER.error('malformed URL: %s', url)
